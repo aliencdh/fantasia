@@ -1,4 +1,4 @@
-#[derive(Clone, Default)]
+#[derive(Clone)]
 pub struct Renderer {
     buffer: Vec<u8>,
     width: usize,
