@@ -7,7 +7,7 @@ pub struct Renderer {
 impl Renderer {
     pub fn new(width: usize, height: usize) -> Self {
         Self {
-            buffer: std::iter::repeat(0).take(width * height * 4).collect(),
+            buffer: vec![0; width * height * 4],
             width,
             height,
         }
