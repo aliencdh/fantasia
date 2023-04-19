@@ -27,23 +27,29 @@ impl Renderer {
     }
 
     pub fn line(&mut self, color: Rgba, from: Point, to: Point) {
+        let mut from = self.to_screen_coords(from);
+        let mut to = self.to_screen_coords(to);
+        if to.magnitude() < from.magnitude() {
+            std::mem::swap(&mut from, &mut to);
+        }
         for t in 0..100 {
             let t = t as f32 / 100.;
-            let current = t * (to - from);
+            let current = from + t * (to - from);
 
-            self.put_pixel(self.to_screen_coords(from + current), color);
+            self.put_pixel(current, color);
         }
     }
 
-    pub fn to_screen_coords(&self, point: Point) -> (usize, usize) {
-        (
-            ((point.x + 1.) * self.width as f32 / 2.) as usize,
-            ((point.y + 1.) * self.height as f32 / 2.) as usize,
-        )
+    pub fn to_screen_coords(&self, point: Point) -> Point {
+        Point {
+            x: (point.x + 1.) * self.width as f32 / 2.,
+            y: (point.y + 1.) * self.height as f32 / 2.,
+            z: 0.,
+        }
     }
 
-    pub fn put_pixel(&mut self, coords: (usize, usize), color: Rgba) {
-        let idx = coords.0 + coords.1 * self.width;
+    pub fn put_pixel(&mut self, coords: Point, color: Rgba) {
+        let idx = (coords.x as usize + coords.y as usize * self.width) * 4;
         self.buffer
             .splice(idx..idx + 4, color.bytes().iter().cloned());
     }
